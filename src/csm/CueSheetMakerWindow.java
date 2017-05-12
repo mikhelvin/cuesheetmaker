@@ -29,7 +29,7 @@ public class CueSheetMakerWindow {
 
 	// COMPONENTS
 	private JFrame frame;
-	private JButton addPanelBtn, removePanelBtn, lockAllBtn, exportBtn;
+	private JButton addPanelBtn, removePanelBtn, lockAllBtn, unlockAllBtn, exportBtn;
 	private JFileChooser chooser;
 	private JPanel eastPanel, northpane;
 	private JScrollPane scrollPane;
@@ -126,42 +126,30 @@ public class CueSheetMakerWindow {
 		lockAllBtn = new JButton("LOCK ALL");
 		lockAllBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				lockAllCues();
+				toggleAllLocks(true);
 			}
 		});
 		lockAllBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		initButton(lockAllBtn);
 		eastPanel.add(lockAllBtn);
 
+		unlockAllBtn = new JButton("UNLOCK ALL");
+		unlockAllBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleAllLocks(false);
+			}
+		});
+		unlockAllBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		initButton(unlockAllBtn);
+		eastPanel.add(unlockAllBtn);
+
 		exportBtn = new JButton("EXPORT");
 		exportBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		initButton(exportBtn);
 		exportBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				lockAllCues();
-
-				chooser = new JFileChooser();
-				chooser.showOpenDialog(null);
-				File f = chooser.getSelectedFile();
-				String savefile = null;
-
-				try {
-					savefile = f.getAbsolutePath();
-				} catch (NullPointerException err) {
-					savefile = null;
-				}
-
-				if (savefile != null) {
-					try {
-						fw = new FileWriter(new File(savefile + ".txt"));
-						fw.write("Hello world!\tThere was a tab before this...");
-						fw.write(System.lineSeparator());
-						fw.write("Second write...");
-						fw.close();
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-				}
+				toggleAllLocks(true);
+				exportToFile();
 			}
 		});
 		exportBtn.setPreferredSize(new Dimension(button_width, button_height));
@@ -201,11 +189,11 @@ public class CueSheetMakerWindow {
 		button.setMaximumSize(btnSize);
 	}
 
-	public void lockAllCues() {
+	public void toggleAllLocks(Boolean bool) {
 		int i = 0;
 		if (panelCount > 0) {
 			for (CuePanel cuePanel : cuePanels) {
-				cuePanels.get(i).setLock(true);
+				cuePanels.get(i).setLock(bool);
 				i++;
 			}
 			// JOptionPane.showMessageDialog(null, "Locked " + panelCount + "
@@ -250,10 +238,51 @@ public class CueSheetMakerWindow {
 			innerPanel.repaint();
 		}
 	}
-	
-	public void buildCue(CuePanel c) {
-		//c.
+
+	public void exportToFile() {
+		chooser = new JFileChooser();
+		chooser.showOpenDialog(null);
+		File f = chooser.getSelectedFile();
+		String savefile = null;
+		int i = 0;
+
+		try {
+			savefile = f.getAbsolutePath();
+		} catch (NullPointerException err) {
+			savefile = null;
+		}
+
+		if (savefile != null) {
+			try {
+				fw = new FileWriter(new File(savefile + ".txt"));
+
+				for (CuePanel cuePanel : cuePanels) {
+					fw.write(buildCue(cuePanels.get(i)));
+					fw.write(System.lineSeparator());
+					i++;
+				}
+				fw.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
-	
-	
+
+	public String buildCue(CuePanel c) {
+		String s = null;
+
+		String tcIN = null;
+		String tcOUT = null;
+
+		tcIN = c.getInTF1().getText() + ":" + c.getInTF2().getText() + ":" + c.getInTF3().getText() + ":"
+				+ c.getInTF4().getText();
+		tcOUT = c.getOutTF1().getText() + ":" + c.getOutTF2().getText() + ":" + c.getOutTF3().getText() + ":"
+				+ c.getOutTF4().getText();
+
+		return s = "1m" + (c.getCue() + 1) + "\t" + c.getTitleTf().getText() + "\t"
+				+ c.formatDuration(c.getDuration_total()) + "\t" + tcIN + "\t" + tcOUT;
+
+		// exportedCues.add(s);
+	}
+
 }
