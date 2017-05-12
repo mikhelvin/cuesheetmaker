@@ -5,9 +5,13 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,23 +22,27 @@ import javax.swing.ScrollPaneConstants;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import javax.swing.BoxLayout;
+import java.awt.Component;
 
 public class CueSheetMakerWindow {
 
+	// COMPONENTS
 	private JFrame frame;
+	private JButton addPanelBtn, removePanelBtn, lockAllBtn, exportBtn;
+	private JFileChooser chooser;
+	private JPanel eastPanel, northpane;
 	private JScrollPane scrollPane;
 
-	private ArrayList<JPanel> cuePanels = new ArrayList<JPanel>();
-
-	private int panelCount, yBase;
-	private JButton addPanelBtn;
-	private JButton removePanelBtn;
+	// COMPONENT SUPPORT
+	private ArrayList<CuePanel> cuePanels;
 	private Container innerPanel;
+	private Dimension btnSize;
 
-	private int scroll_height, scroll_width, button_width, button_height;
-	private JPanel eastPanel;
-	private JPanel northpane;
-	private JButton exportBtn;
+	// JAVA OBJECTS & PRIMITIVES
+	private FileWriter fw;
+	private ArrayList<String> exportedCues;
+	private int panelCount, yBase, scroll_height, scroll_width, button_width, button_height;
 
 	/**
 	 * Launch the application.
@@ -64,19 +72,13 @@ public class CueSheetMakerWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 850, 737);
+		frame.setBounds(100, 100, 1024, 737);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		scroll_height = 50;
-		scroll_width = 550;
-		button_width = 125;
-		button_height = 35;
+		varInit();
 
-		yBase = 10;
-
-		panelCount = 0;
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 10, 640, 107, 0 };
+		gridBagLayout.columnWidths = new int[] { 10, 840, 107, 0 };
 		gridBagLayout.rowHeights = new int[] { 159, 698, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 1.0, 1.0, 0.0, Double.MIN_VALUE };
@@ -109,16 +111,59 @@ public class CueSheetMakerWindow {
 		gbc_eastPanel.gridx = 2;
 		gbc_eastPanel.gridy = 1;
 		frame.getContentPane().add(eastPanel, gbc_eastPanel);
+		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
 
 		addPanelBtn = new JButton("ADD CUE");
-		addPanelBtn.setPreferredSize(new Dimension(button_width, button_height));
+		addPanelBtn.setAlignmentY(Component.TOP_ALIGNMENT);
+		initButton(addPanelBtn);
 		eastPanel.add(addPanelBtn);
 
 		removePanelBtn = new JButton("REMOVE CUE");
-		removePanelBtn.setPreferredSize(new Dimension(button_width, button_height));
+		removePanelBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		initButton(removePanelBtn);
 		eastPanel.add(removePanelBtn);
 
+		lockAllBtn = new JButton("LOCK ALL");
+		lockAllBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lockAllCues();
+			}
+		});
+		lockAllBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		initButton(lockAllBtn);
+		eastPanel.add(lockAllBtn);
+
 		exportBtn = new JButton("EXPORT");
+		exportBtn.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		initButton(exportBtn);
+		exportBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				lockAllCues();
+
+				chooser = new JFileChooser();
+				chooser.showOpenDialog(null);
+				File f = chooser.getSelectedFile();
+				String savefile = null;
+
+				try {
+					savefile = f.getAbsolutePath();
+				} catch (NullPointerException err) {
+					savefile = null;
+				}
+
+				if (savefile != null) {
+					try {
+						fw = new FileWriter(new File(savefile + ".txt"));
+						fw.write("Hello world!\tThere was a tab before this...");
+						fw.write(System.lineSeparator());
+						fw.write("Second write...");
+						fw.close();
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				}
+			}
+		});
 		exportBtn.setPreferredSize(new Dimension(button_width, button_height));
 		eastPanel.add(exportBtn);
 		removePanelBtn.addActionListener(new ActionListener() {
@@ -134,11 +179,45 @@ public class CueSheetMakerWindow {
 
 	} // END INITIALIZE
 
+	private void varInit() {
+		scroll_height = 50;
+		scroll_width = 550;
+		button_width = 125;
+		button_height = 35;
+
+		yBase = 10;
+
+		panelCount = 0;
+
+		btnSize = new Dimension(button_width, button_height);
+		cuePanels = new ArrayList<CuePanel>();
+		exportedCues = new ArrayList<String>();
+	}
+
+	private void initButton(JButton button) {
+
+		button.setMinimumSize(btnSize);
+		button.setPreferredSize(btnSize);
+		button.setMaximumSize(btnSize);
+	}
+
+	public void lockAllCues() {
+		int i = 0;
+		if (panelCount > 0) {
+			for (CuePanel cuePanel : cuePanels) {
+				cuePanels.get(i).setLock(true);
+				i++;
+			}
+			// JOptionPane.showMessageDialog(null, "Locked " + panelCount + "
+			// cues!"); // DEBUG MESSAGE DIALOG
+		}
+	}
+
 	public void addPanel() {
 		int i = panelCount;
 
 		cuePanels.add(i, new CuePanel(i));
-		cuePanels.get(i).setBounds(10, yBase, 560, 50);
+		cuePanels.get(i).setBounds(10, yBase, 700, 50);
 		innerPanel.add(cuePanels.get(i));
 		yBase += 60;
 		panelCount++;
@@ -148,7 +227,6 @@ public class CueSheetMakerWindow {
 		JScrollBar vertical = scrollPane.getVerticalScrollBar();
 		vertical.setValue(vertical.getMaximum());
 
-		innerPanel.getParent().revalidate();
 		innerPanel.revalidate();
 		innerPanel.repaint();
 	}
@@ -158,7 +236,6 @@ public class CueSheetMakerWindow {
 		if (target < 0) {
 			JOptionPane.showMessageDialog(null, "No cues left!");
 		} else {
-			// frame.getContentPane().remove(cuePanels.get(target));
 			innerPanel.remove(cuePanels.get(target));
 			cuePanels.remove(target);
 			yBase -= 60;
@@ -169,9 +246,14 @@ public class CueSheetMakerWindow {
 			JScrollBar vertical = scrollPane.getVerticalScrollBar();
 			vertical.setValue(vertical.getMaximum());
 
-			innerPanel.getParent().revalidate();
 			innerPanel.revalidate();
 			innerPanel.repaint();
 		}
 	}
+	
+	public void buildCue(CuePanel c) {
+		//c.
+	}
+	
+	
 }
