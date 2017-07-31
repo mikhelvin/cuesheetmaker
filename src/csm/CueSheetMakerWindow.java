@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -40,7 +41,7 @@ public class CueSheetMakerWindow {
 	private Dimension btnSize;
 
 	// JAVA OBJECTS & PRIMITIVES
-	private FileWriter fw;
+	private PrintWriter pw;
 	private ArrayList<String> exportedCues;
 	private int panelCount, yBase, scroll_height, scroll_width, button_width, button_height;
 
@@ -240,31 +241,37 @@ public class CueSheetMakerWindow {
 	}
 
 	public void exportToFile() {
-		chooser = new JFileChooser();
-		chooser.showOpenDialog(null);
-		File f = chooser.getSelectedFile();
-		String savefile = null;
+
+		File saveLocation = getSaveLocation();
 		int i = 0;
+		
+		if (saveLocation != null) {
 
-		try {
-			savefile = f.getAbsolutePath();
-		} catch (NullPointerException err) {
-			savefile = null;
-		}
+				try {
+					pw = new PrintWriter(new File(saveLocation + ".txt"));
 
-		if (savefile != null) {
-			try {
-				fw = new FileWriter(new File(savefile + ".txt"));
-
-				for (CuePanel cuePanel : cuePanels) {
-					fw.write(buildCue(cuePanels.get(i)));
-					fw.write(System.lineSeparator());
-					i++;
+					for (CuePanel cuePanel : cuePanels) {
+						pw.write(buildCue(cuePanels.get(i)));
+						pw.write(System.lineSeparator());
+						i++;
+					}
+					pw.close();
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
-				fw.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+
+		}
+	}
+	
+	
+	private File getSaveLocation() {
+		chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		int result = chooser.showSaveDialog(null);
+		if (result == chooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		} else {
+			return null;
 		}
 	}
 

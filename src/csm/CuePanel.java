@@ -44,7 +44,7 @@ public class CuePanel extends JPanel {
 	public void initializers(int currentCue) {
 		setBounds(new Rectangle(0, 0, 700, 50));
 		setLayout(null);
-
+		
 		cuenum = new JLabel("1m" + Integer.toString(currentCue));
 		cuenum.setBounds(5, 4, 35, 14);
 		add(cuenum);
