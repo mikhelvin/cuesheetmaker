@@ -77,6 +77,8 @@ public class CueSheetMakerWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		varInit();
+		
+		CueTotal cueTotalPane = new CueTotal();
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 840, 107, 0 };
@@ -87,6 +89,7 @@ public class CueSheetMakerWindow {
 
 		northpane = new JPanel();
 		GridBagConstraints gbc_northpane = new GridBagConstraints();
+		northpane.add(cueTotalPane);
 		gbc_northpane.anchor = GridBagConstraints.SOUTH;
 		gbc_northpane.insets = new Insets(0, 0, 5, 5);
 		gbc_northpane.gridx = 1;

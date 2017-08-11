@@ -46,69 +46,69 @@ public class CuePanel extends JPanel {
 		setLayout(null);
 		
 		cuenum = new JLabel("1m" + Integer.toString(currentCue));
-		cuenum.setBounds(5, 4, 35, 14);
+		cuenum.setBounds(5, 4, 56, 14);
 		add(cuenum);
 
 		lock = false;
 
 		titleTf = new JTextField();
 		titleTf.setColumns(10);
-		titleTf.setBounds(51, 0, 203, 20);
+		titleTf.setBounds(65, 1, 203, 20);
 		add(titleTf);
 
 		durationLbl = new JLabel("[UNLOCKED]");
 		durationLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		durationLbl.setBounds(264, 26, 92, 14);
+		durationLbl.setBounds(269, 26, 92, 14);
 		add(durationLbl);
 
 		inTF1 = new JTextField();
 		inTF1.setColumns(10);
-		inTF1.setBounds(425, 0, 30, 20);
+		inTF1.setBounds(430, 0, 30, 20);
 		add(inTF1);
 
 		inTF2 = new JTextField();
 		inTF2.setColumns(10);
-		inTF2.setBounds(457, 0, 30, 20);
+		inTF2.setBounds(462, 0, 30, 20);
 		add(inTF2);
 
 		inTF4 = new JTextField();
 		inTF4.setColumns(10);
-		inTF4.setBounds(521, 0, 30, 20);
+		inTF4.setBounds(526, 0, 30, 20);
 		add(inTF4);
 
 		inTF3 = new JTextField();
 		inTF3.setColumns(10);
-		inTF3.setBounds(489, 0, 30, 20);
+		inTF3.setBounds(494, 0, 30, 20);
 		add(inTF3);
 
 		outTF1 = new JTextField();
 		outTF1.setColumns(10);
-		outTF1.setBounds(425, 24, 30, 20);
+		outTF1.setBounds(430, 24, 30, 20);
 		add(outTF1);
 
 		outTF2 = new JTextField();
 		outTF2.setColumns(10);
-		outTF2.setBounds(457, 24, 30, 20);
+		outTF2.setBounds(462, 24, 30, 20);
 		add(outTF2);
 
 		outTF3 = new JTextField();
 		outTF3.setColumns(10);
-		outTF3.setBounds(489, 24, 30, 20);
+		outTF3.setBounds(494, 24, 30, 20);
 		add(outTF3);
 
 		outTF4 = new JTextField();
 		outTF4.setColumns(10);
-		outTF4.setBounds(521, 24, 30, 20);
+		outTF4.setBounds(526, 24, 30, 20);
 		add(outTF4);
 
 		outLbl = new JLabel("OUT");
 		outLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		outLbl.setBounds(366, 26, 49, 14);
+		outLbl.setBounds(371, 26, 49, 14);
 		add(outLbl);
 
 		inLbl = new JLabel("IN");
 		inLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		inLbl.setBounds(365, 4, 50, 14);
+		inLbl.setBounds(370, 4, 50, 14);
 		add(inLbl);
 
 		lockCheckbox = new JCheckBox("LOCK");
@@ -117,13 +117,13 @@ public class CuePanel extends JPanel {
 				cueLocked();
 			}
 		});
-		lockCheckbox.setBounds(577, 23, 100, 23);
+		lockCheckbox.setBounds(582, 23, 100, 23);
 		add(lockCheckbox);
 
 		durLbl = new JLabel("DURATION");
 		durLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		durLbl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		durLbl.setBounds(264, 4, 92, 14);
+		durLbl.setBounds(269, 4, 92, 14);
 		add(durLbl);
 
 		clearBtn = new JButton("x");
@@ -132,7 +132,7 @@ public class CuePanel extends JPanel {
 				reset();
 			}
 		});
-		clearBtn.setBounds(577, 0, 100, 19);
+		clearBtn.setBounds(582, 0, 100, 19);
 		clearBtn.setFocusable(false);
 		add(clearBtn);
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[] { cuenum, durationLbl, titleTf, inTF1, inTF2,
